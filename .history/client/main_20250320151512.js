@@ -8,8 +8,6 @@ let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-console.log("DiscordSDK created");
-
 setupDiscordSdk().then(() => {
   console.log("Discord SDK is authenticated");
 
@@ -19,10 +17,7 @@ setupDiscordSdk().then(() => {
 
 
   appendVoiceChannelName();//from step six
-}).catch(("SDK Failure",(error) => 
-  {
-    console.error(error);
-  }));
+});
 
 async function appendVoiceChannelName() {
   console.log("Does this code get called?");
@@ -46,7 +41,7 @@ async function appendVoiceChannelName() {
   const textTag = document.createElement('p');
   textTag.textContent = textTagString;
   app.appendChild(textTag);
-  console.log("This code gets called!");
+  console.log("Does this code get called!");
 }
 
 async function setupDiscordSdk() {

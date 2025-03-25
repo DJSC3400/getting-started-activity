@@ -15,6 +15,5 @@ export default defineConfig({
     hmr: {
       clientPort: 443,
     },
-    allowedHosts: ['bee-cb-labels-liverpool.trycloudflare.com'],
   },
 });

@@ -19,10 +19,7 @@ setupDiscordSdk().then(() => {
 
 
   appendVoiceChannelName();//from step six
-}).catch(("SDK Failure",(error) => 
-  {
-    console.error(error);
-  }));
+});
 
 async function appendVoiceChannelName() {
   console.log("Does this code get called?");

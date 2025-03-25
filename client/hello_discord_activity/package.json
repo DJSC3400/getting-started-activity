@@ -1,5 +1,5 @@
 {
-  "name": "getting-started-activity",
+  "name": "hello_discord_activity",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,10 +9,6 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^6.2.2"
-  },
-  "dependencies": {
-    "@discord/embedded-app-sdk": "^1.9.0",
-    "express": "^4.21.2"
+    "vite": "^6.2.0"
   }
 }
