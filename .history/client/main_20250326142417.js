@@ -5,7 +5,7 @@ import "./style.css";
 
 // Will eventually store the authenticated user's access_token
 let auth;
-console.log("Discord SDK is not authenticated");
+
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
 setupDiscordSdk().then(() => {
