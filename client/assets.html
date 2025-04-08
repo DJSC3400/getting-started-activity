@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Game Here - Game Assets</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header>
+        <h1><span id="game-name">Game Name</span></h1>
+        <a href="index.html" id="back-button">Back to Library</a>
+    </header>
+    <main>
+        <section id="assets-grid">
+            <!-- Game assets will be dynamically loaded here -->
+        </section>
+        <!-- I think doing asset upload per asset item in a grid is the better way so that it is easier to format -->
+        <!-- <section id="upload-section">
+            <h2>Upload New Assets</h2>
+            <input type="file" id="file-upload" multiple>
+            <button id="upload-button">Upload</button>
+            <ul id="uploaded-files-list"></ul>
+        </section> -->
+    </main>
+    <script>
+        // get the game name from the URL for the header
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameName = urlParams.get('game');
+
+        // set the game name in the header
+        const gameNameElement = document.getElementById('game-name');
+        if (gameName) {
+            gameNameElement.textContent = gameName.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        } else {
+            gameNameElement.textContent = "Unknown Game";
+        }
+
+        // change this for actual assets in the game, not sure how to get the assets to show up yet
+        // so these are just some example ones
+        const assets = [
+            { name: "Background color/image", src: "" },
+            { name: "Asset 1", src: "" },
+            { name: "Asset 2", src: "" }
+        ];
+
+        // asset grid
+        const assetsGrid = document.getElementById('assets-grid');
+        assets.forEach(asset => {
+            const assetCard = document.createElement('div');
+            assetCard.classList.add('asset-card');
+
+            const assetImage = document.createElement('img');
+            assetImage.src = asset.src || "images/placeholder.png"; // Use a placeholder if no src is provided
+            assetImage.alt = asset.name;
+
+            const assetName = document.createElement('h3');
+            assetName.textContent = asset.name;
+
+            const changeButton = document.createElement('button');
+            changeButton.textContent = "Change Asset";
+            changeButton.addEventListener('click', () => {
+                handleChangeAsset(asset, assetImage);
+            });
+
+            assetCard.appendChild(assetImage);
+            assetCard.appendChild(assetName);
+            assetCard.appendChild(changeButton);
+
+            assetsGrid.appendChild(assetCard);
+        });
+
+        // handle changing the assets
+        function handleChangeAsset(asset, assetImageElement) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; // only accept images as file types
+
+            // file input dialog
+            fileInput.click();
+
+            // file selection
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    // fileReader to read the file and update the asset
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        // update the asset's image source
+                        assetImageElement.src = reader.result;
+                    };
+                    reader.readAsDataURL(file); // read the file as url
+                }
+            });
+        }
+
+        // file upload handler
+        const fileUploadInput = document.getElementById('file-upload');
+        const uploadButton = document.getElementById('upload-button');
+        const uploadedFilesList = document.getElementById('uploaded-files-list');
+
+        uploadButton.addEventListener('click', () => {
+            const files = fileUploadInput.files;
+            if (files.length === 0) {
+                alert('Please select files to upload.');
+                return;
+            }
+
+            for (const file of files) {
+                const listItem = document.createElement('li');
+                listItem.textContent = file.name;
+                uploadedFilesList.appendChild(listItem);
+            }
+
+            // this currently does not store the uploaded file, need to add a backend database or something similar to do this
+            // or using a discord solution to store the uploaded files for the duration of the session
+            alert(`${files.length} file(s) uploaded successfully.`);
+        });
+    </script>
+</body>
+</html>
