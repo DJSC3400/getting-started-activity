@@ -15,6 +15,6 @@ export default defineConfig({
     hmr: {
       clientPort: 443,
     },
-    allowedHosts: ['bee-cb-labels-liverpool.trycloudflare.com',"common-foundation-also-naturals.trycloudflare.com"],
+    allowedHosts: ['bee-cb-labels-liverpool.trycloudflare.com',"common-foundation-also-naturals.trycloudflare.com","discussions-hack-modules-botswana.trycloudflare.com"],
   },
 });
