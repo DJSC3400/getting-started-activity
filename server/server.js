@@ -31,19 +31,19 @@ app.use(
 const upload = multer({ dest: "uploads/" });
 
 // function to find .html files recursively
-// function findHtmlFile(directory) {
-//   const files = fs.readdirSync(directory, { withFileTypes: true });
-//   for (const file of files) {
-//     const fullPath = path.join(directory, file.name);
-//     if (file.isFile() && file.name.endsWith(".html")) {
-//       return fullPath; // Return the full path to the .html file
-//     } else if (file.isDirectory()) {
-//       const found = findHtmlFile(fullPath); // Recursively search subdirectories
-//       if (found) return found;
-//     }
-//   }
-//   return null; // No .html file found
-// }
+function findHtmlFile(directory) {
+  const files = fs.readdirSync(directory, { withFileTypes: true });
+  for (const file of files) {
+    const fullPath = path.join(directory, file.name);
+    if (file.isFile() && file.name.endsWith(".html")) {
+      return fullPath; // Return the full path to the .html file
+    } else if (file.isDirectory()) {
+      const found = findHtmlFile(fullPath); // Recursively search subdirectories
+      if (found) return found;
+    }
+  }
+  return null; // No .html file found
+}
 
 // Route to handle file upload
 app.post("/upload", upload.single("gameZip"), (req, res) => {
