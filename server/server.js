@@ -26,6 +26,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use('/assets', express.static(path.join(__dirname, '../client/assets'))); //for assets
 
 // multer setup for file uploads
 const upload = multer({ dest: "uploads/" });
@@ -78,6 +79,28 @@ app.post("/upload", upload.single("gameZip"), (req, res) => {
     sessionId: sessionId,
     htmlFile: relativeHtmlPath, 
   });
+});
+
+// route to handle assets upload
+app.post('/upload-assets', upload.array('assets'), (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: 'No files uploaded.' });
+    }
+
+    const sessionId = req.session.id;
+    const sessionAssetsPath = path.join(__dirname, '../client/assets', sessionId);
+
+    // Create a session-specific folder if it doesn't exist
+    if (!fs.existsSync(sessionAssetsPath)) {
+        fs.mkdirSync(sessionAssetsPath, { recursive: true });
+    }
+
+    req.files.forEach(file => {
+        const destPath = path.join(sessionAssetsPath, file.originalname);
+        fs.renameSync(file.path, destPath);
+    });
+
+    res.status(200).json({ message: 'Assets uploaded successfully!' });
 });
 
 // start the server
