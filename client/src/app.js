@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             descriptionBox.classList.add('visible');
         });
     });
+    
 
     // Close button click
     closeBtn.addEventListener('click', () => {

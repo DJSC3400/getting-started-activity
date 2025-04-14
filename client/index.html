@@ -26,6 +26,11 @@
                 <img src="images/concentrationCard.jpg" alt="Concentration">
                 <h2>Concentration</h2>
             </div>
+            <div class="add-game-card">
+                <h2>Add a Game</h2>
+                <img src="images/upload-game-card.png" alt="Add a Game">
+                <input type="file" id="file-upload" accept=".zip" style="display: none;">
+            </div>
         </section>
         <!-- description Box -->
         <aside id="description-box" class="hidden">
@@ -38,6 +43,7 @@
     </main>
     <!-- testing commits -->
     <script src="src/app.js"></script>
+    <script src="scripts/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const gameCards = document.querySelectorAll('.game-card');
