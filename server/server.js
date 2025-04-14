@@ -45,7 +45,7 @@ function findHtmlFile(directory) {
   return null; // No .html file found
 }
 
-// Route to handle file upload
+// route to handle file upload
 app.post("/upload", upload.single("gameZip"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded." });
@@ -54,12 +54,12 @@ app.post("/upload", upload.single("gameZip"), (req, res) => {
   const sessionId = req.session.id;
   const sessionGamesPath = path.join(__dirname, "../client/games", sessionId);
 
-  // Create a session-specific folder if it doesn't exist
+  // create a session-specific folder if it doesn't exist
   if (!fs.existsSync(sessionGamesPath)) {
     fs.mkdirSync(sessionGamesPath, { recursive: true });
   }
 
-  // Extract the uploaded .zip file
+  // extract the uploaded .zip file
   const zip = new AdmZip(req.file.path);
   zip.extractAllTo(sessionGamesPath, true);
 
