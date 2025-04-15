@@ -15,10 +15,12 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3001;
+ 
+console.log(process.cwd());
 
 // middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../client")));
+app.use(express.static(path.join(__dirname, "../static")));
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "default-secret-key", // session key
@@ -26,25 +28,25 @@ app.use(
     saveUninitialized: true,
   })
 );
-app.use('/assets', express.static(path.join(__dirname, '../client/assets'))); //for assets
+app.use('/assets', express.static(path.join(__dirname, '../assets'))); //for assets
 
 // multer setup for file uploads
 const upload = multer({ dest: "uploads/" });
 
-// function to find .html files recursively
-function findHtmlFile(directory) {
-  const files = fs.readdirSync(directory, { withFileTypes: true });
-  for (const file of files) {
-    const fullPath = path.join(directory, file.name);
-    if (file.isFile() && file.name.endsWith(".html")) {
-      return fullPath; // Return the full path to the .html file
-    } else if (file.isDirectory()) {
-      const found = findHtmlFile(fullPath); // Recursively search subdirectories
-      if (found) return found;
-    }
-  }
-  return null; // No .html file found
-}
+// // function to find .html files recursively
+// function findHtmlFile(directory) {
+//   const files = fs.readdirSync(directory, { withFileTypes: true });
+//   for (const file of files) {
+//     const fullPath = path.join(directory, file.name);
+//     if (file.isFile() && file.name.endsWith(".html")) {
+//       return fullPath; // Return the full path to the .html file
+//     } else if (file.isDirectory()) {
+//       const found = findHtmlFile(fullPath); // Recursively search subdirectories
+//       if (found) return found;
+//     }
+//   }
+//   return null; // No .html file found
+// }
 
 // route to handle file upload
 app.post("/upload", upload.single("gameZip"), (req, res) => {
@@ -53,7 +55,7 @@ app.post("/upload", upload.single("gameZip"), (req, res) => {
   }
 
   const sessionId = req.session.id;
-  const sessionGamesPath = path.join(__dirname, "../client/games", sessionId);
+  const sessionGamesPath = path.join(__dirname, "../games", sessionId);
 
   // create a session-specific folder if it doesn't exist
   if (!fs.existsSync(sessionGamesPath)) {
@@ -68,7 +70,7 @@ app.post("/upload", upload.single("gameZip"), (req, res) => {
   fs.unlinkSync(req.file.path);
 
   // get the relative path to the .html file
-  const relativeHtmlPath = path.relative(path.join(__dirname, "../client/games"), htmlFilePath);
+  const relativeHtmlPath = path.relative(path.join(__dirname, "../games"), htmlFilePath);
 
   // debug
   console.log(`Extracted files for session ${sessionId}:`);
@@ -106,4 +108,5 @@ app.post('/upload-assets', upload.array('assets'), (req, res) => {
 // start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+  console.log(process.cwd());
 });
