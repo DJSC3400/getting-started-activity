@@ -16,12 +16,12 @@
             <!-- Game assets will be dynamically loaded here -->
         </section>
         <!-- I think doing asset upload per asset item in a grid is the better way so that it is easier to format -->
-        <section id="upload-section">
+        <!-- <section id="upload-section">
             <h2>Upload New Assets</h2>
-            <input type="file" id="asset-upload" multiple>
-            <button id="upload-assets-button">Upload</button>
-            <ul id="uploaded-assets-list"></ul>
-        </section>
+            <input type="file" id="file-upload" multiple>
+            <button id="upload-button">Upload</button>
+            <ul id="uploaded-files-list"></ul>
+        </section> -->
     </main>
     <script>
         // get the game name from the URL for the header
@@ -95,39 +95,26 @@
         }
 
         // file upload handler
-        const uploadAssetsButton = document.getElementById('upload-assets-button');
-        const assetUploadInput = document.getElementById('asset-upload');
-        const uploadedAssetsList = document.getElementById('uploaded-assets-list');
+        const fileUploadInput = document.getElementById('file-upload');
+        const uploadButton = document.getElementById('upload-button');
+        const uploadedFilesList = document.getElementById('uploaded-files-list');
 
-        uploadAssetsButton.addEventListener('click', () => {
-            const files = assetUploadInput.files;
+        uploadButton.addEventListener('click', () => {
+            const files = fileUploadInput.files;
             if (files.length === 0) {
                 alert('Please select files to upload.');
                 return;
             }
 
-            const formData = new FormData();
             for (const file of files) {
-                formData.append('assets', file);
+                const listItem = document.createElement('li');
+                listItem.textContent = file.name;
+                uploadedFilesList.appendChild(listItem);
             }
 
-            fetch('/upload-assets', {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    for (const file of files) {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = file.name;
-                        uploadedAssetsList.appendChild(listItem);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error uploading assets:', error);
-                    alert('Failed to upload assets.');
-                });
+            // this currently does not store the uploaded file, need to add a backend database or something similar to do this
+            // or using a discord solution to store the uploaded files for the duration of the session
+            alert(`${files.length} file(s) uploaded successfully.`);
         });
     </script>
 </body>
