@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const gameName = playGameBtn.dataset.game;
         const gameURL = gameURLs[gameName];
         if (gameURL) {
-            window.location.href = `game.html?game=${encodeURIComponent(gameURL)}`;
+            window.location.href = `game.html?game=games/${gameURL}`;
             console.log("href", window.location.href);
         } else {
             alert("Game not available.");

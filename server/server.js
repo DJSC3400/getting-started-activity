@@ -28,59 +28,73 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.get("/games/:id", function (req, res) {
+  // Correct the path to point to /server/games
+  const gamePath = path.join(__dirname, "games", req.params.id, "index.html");
+  console.log("Resolved game path:", gamePath); // Debugging log
+
+  res.sendFile(gamePath, function (err) {
+    if (err) {
+      console.error(err);
+      res.status(404).send("Game not found");
+    }
+  });
+});
+
+// app.get(/^\/games/(.+)\/(.+)/, function(req, res) {
+//   const id = req.params[0];
+//   const path = req.params[1];
+//   res.sendFile(`/games/${id}/${path}`);
+
+// });
+
+app.use('/games', express.static(path.join(__dirname, 'games')));
+
 app.use('/assets', express.static(path.join(__dirname, '../assets'))); //for assets
 
 // multer setup for file uploads
 const upload = multer({ dest: "uploads/" });
 
-// // function to find .html files recursively
-// function findHtmlFile(directory) {
-//   const files = fs.readdirSync(directory, { withFileTypes: true });
-//   for (const file of files) {
-//     const fullPath = path.join(directory, file.name);
-//     if (file.isFile() && file.name.endsWith(".html")) {
-//       return fullPath; // Return the full path to the .html file
-//     } else if (file.isDirectory()) {
-//       const found = findHtmlFile(fullPath); // Recursively search subdirectories
-//       if (found) return found;
-//     }
-//   }
-//   return null; // No .html file found
-// }
+// POST /upload route
+app.post('/upload', upload.single('gameZip'), (req, res) => {
+    try {
+        if (!req.file) {
+            throw new Error('No file uploaded');
+        }
 
-// route to handle file upload
-app.post("/upload", upload.single("gameZip"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded." });
-  }
+        console.log('Uploaded file:', req.file);
 
-  const sessionId = req.session.id;
-  const sessionGamesPath = path.join(__dirname, "../games", sessionId);
+        // Define the destination directory for the game
+        const gameName = req.file.originalname.replace('.zip', '').replace(/-/g, ' ');
+        const sessionId = Date.now().toString();
+        const gameDir = path.join(__dirname, 'games', sessionId, gameName);
 
-  // create a session-specific folder if it doesn't exist
-  if (!fs.existsSync(sessionGamesPath)) {
-    fs.mkdirSync(sessionGamesPath, { recursive: true });
-  }
+        // Create the game directory if it doesn't exist
+        if (!fs.existsSync(gameDir)) {
+            fs.mkdirSync(gameDir, { recursive: true });
+        }
 
-  // extract the uploaded .zip file
-  const zip = new AdmZip(req.file.path);
-  zip.extractAllTo(sessionGamesPath, true);
+        // Move the uploaded file to the game directory
+        const uploadedFilePath = req.file.path;
+        const destinationPath = path.join(gameDir, req.file.originalname);
 
-  // delete the uploaded .zip file after extraction
-  fs.unlinkSync(req.file.path);
+        fs.renameSync(uploadedFilePath, destinationPath);
 
-  // get the relative path to the .html file
-  const relativeHtmlPath = path.relative(path.join(__dirname, "../games"), htmlFilePath);
+        // Extract the .zip file
+        const zip = new AdmZip(destinationPath);
+        zip.extractAllTo(gameDir, true); // Extract all files to the game directory
+        console.log(`Extracted ${req.file.originalname} to ${gameDir}`);
 
-  // debug
-  console.log(`Extracted files for session ${sessionId}:`);
-  console.log(fs.readdirSync(sessionGamesPath));
+        // Delete the .zip file after extraction
+        fs.unlinkSync(destinationPath);
 
-  res.status(200).json({
-    message: "Game uploaded and extracted successfully!",
-    sessionId: sessionId,
-    htmlFile: relativeHtmlPath, 
-  });
+        console.log(`Game uploaded and extracted successfully to ${gameDir}`);
+        res.json({ sessionId });
+    } catch (error) {
+        console.error('Error handling upload:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // route to handle assets upload
